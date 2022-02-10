@@ -32,8 +32,8 @@ public class TheatreController {
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createProduct(@RequestBody Theatre theatre) {
-    	theatreRepository.insert(theatre);
+    public void createTheatre(@RequestBody Theatre theatre) {
+    	theatreRepository.save(theatre);
     }
     
     

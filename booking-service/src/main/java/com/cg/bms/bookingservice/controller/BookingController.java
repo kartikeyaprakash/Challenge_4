@@ -33,7 +33,7 @@ public class BookingController {
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createProduct(@RequestBody Booking theatre) {
+    public void createBooking(@RequestBody Booking theatre) {
     	bookingRepository.save(theatre);
     }
     
