@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.cg.bms</groupId>
-	<artifactId>theatre-service</artifactId>
+	<artifactId>city-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>theatre-service</name>
+	<name>city-service</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
