@@ -1,13 +1,10 @@
 package com.cg.bms.theatreservice.model;
 
-
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -15,22 +12,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document(value = "theatre")
+@Document(value = "screen")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Theatre {
+public class Screen {
 	
-	
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Id
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String _id;
-	
-	
-	private String name;
-	private Set<String> screenIds;
-	private String cityId;
-	
-}
+	private Set<String> showTimeIds;
+	private String theatreId;
+	private Set<String> seatIds;
 
+
+}

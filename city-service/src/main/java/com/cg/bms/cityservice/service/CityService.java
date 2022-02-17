@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import com.cg.bms.cityservice.model.Cities;
 import com.cg.bms.cityservice.model.City;
@@ -18,6 +19,9 @@ public class CityService {
 	
 	@Autowired
 	private CityRepository cityRepository;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 	
 	
 	public City addCity(City city)
@@ -42,6 +46,7 @@ public class CityService {
 		return null;
 	}
 	
+	
 	public City updateCity(String cityId, City updatedCity)
 	{
 		City foundCity = getCity(cityId);
@@ -51,8 +56,14 @@ public class CityService {
 		return cityRepository.save(foundCity);
 	}
 	
+	
+	//Delete all Theatres in Theatre DB
 	public void deleteCity(String cityId)
 	{
+		City cityToDelete = getCity(cityId);
+		List<String> theatreIds = cityToDelete.getTheatreIds();
+		for(String theatreId: theatreIds)
+			restTemplate.delete("http://theatre-service/{theatreId}/theatres", theatreId);
 		cityRepository.deleteById(cityId);
 	}
 

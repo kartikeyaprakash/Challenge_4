@@ -16,7 +16,6 @@ import com.cg.bms.bookingservice.repository.BookingRepository;
 
 
 @RestController
-@RequestMapping("/api/booking")
 public class BookingController {
 	
 	
@@ -24,19 +23,7 @@ public class BookingController {
 	private BookingRepository bookingRepository;
 	
 	
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Booking> findAll() {
-        return bookingRepository.findAll();
-    }
-
-    
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createBooking(@RequestBody Booking theatre) {
-    	bookingRepository.save(theatre);
-    }
-    
+        
     
     
 }
