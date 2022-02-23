@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import com.cg.bms.theatreservice.model.Booking;
 import com.cg.bms.theatreservice.model.City;
 import com.cg.bms.theatreservice.model.Screen;
 import com.cg.bms.theatreservice.model.Seat;
@@ -333,6 +334,7 @@ public class TheatreService {
 		updateScreen(parentScreen.get_id(), parentScreen);
 	}
 	
+	
 	public Seat deleteSeat(String seatId)
 	{
 		Seat seatToBeDeleted = getSeat(seatId);
@@ -357,14 +359,63 @@ public class TheatreService {
 		
 	}
 	
-	public void lockSeatsForShowTime(String showTimeId)
+	public void lockSeatsForBooking(String bookingId) throws Exception
+	{
+		Booking booking = restTemplate.getForObject("http://booking-service/{bookingId}/bookings", Booking.class, bookingId);
+		Set<String> lockedSeatIds = booking.getSeatIds();
+		ShowTime bookingShowTime = getShowTime(booking.getShowTimeId());
+		Set<String> lockedSeatIdsForBookingShowTime = bookingShowTime.getLockedSeatIds();
+		for(String seatId: lockedSeatIds)
+		{
+			if(isSeatAvailableForShowTime(booking.getShowTimeId(), seatId))
+				lockSeatForShowTime(booking.getShowTimeId(), seatId);
+			else 
+				throw new Exception();
+
+		}
+		lockedSeatIdsForBookingShowTime.addAll(lockedSeatIds);
+		bookingShowTime.setLockedSeatIds(lockedSeatIdsForBookingShowTime);
+		updateShowTime(booking.getShowTimeId(), bookingShowTime);
+	}
+	
+	
+	//incorrect function, only booking seats have to be locked for booking show time
+	public void lockSeatsForShowTime(String showTimeId) throws Exception
 	{
 		for(String seatId: getShowTime(showTimeId).getLockedSeatIds())
 		{
 			if(isSeatAvailableForShowTime(showTimeId, seatId))
 				lockSeatForShowTime(showTimeId, seatId);
+			else 
+				throw new Exception();
 			//throw exception in else block, seat is not available
 		}
+	}
+	
+	public void releaseAllSeatsForShowTime(String showTimeId)
+	{
+		ShowTime showTime = getShowTime(showTimeId);
+		Set<String> lockedSeatIds = showTime.getLockedSeatIds();
+		for(String seatId: lockedSeatIds)
+			releaseLockOnSeatForShowTime(showTimeId, seatId);
+		lockedSeatIds.clear();
+		showTime.setLockedSeatIds(lockedSeatIds);
+		updateShowTime(showTimeId, showTime);
+		
+	}
+	
+	public void releaseSeatsForBooking(String bookingId)
+	{
+		Booking booking = restTemplate.getForObject("http://booking-service/{bookingId}/bookings", Booking.class, bookingId);
+		ShowTime showTime = getShowTime(booking.getShowTimeId());
+		Set<String> lockedSeatIdsForShowTime = showTime.getLockedSeatIds();
+		Set<String> lockedSeatIdsForBooking = booking.getSeatIds();
+		for(String seatId: lockedSeatIdsForBooking )
+			releaseLockOnSeatForShowTime(booking.getShowTimeId(), seatId);
+		lockedSeatIdsForShowTime.removeAll(lockedSeatIdsForBooking);
+		showTime.setLockedSeatIds(lockedSeatIdsForShowTime);
+		updateShowTime(booking.getShowTimeId(), showTime);
+
 	}
 	
 	public void releaseLockOnSeatForShowTime(String showTimeId, String seatId)

@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.bms.theatreservice.model.Booking;
 import com.cg.bms.theatreservice.model.Screen;
 import com.cg.bms.theatreservice.model.Seat;
+import com.cg.bms.theatreservice.model.Seats;
 import com.cg.bms.theatreservice.model.ShowTime;
 import com.cg.bms.theatreservice.model.Theatre;
 import com.cg.bms.theatreservice.model.Theatres;
@@ -27,6 +29,12 @@ public class TheatreController {
 	
 	@Autowired
 	private TheatreService theatreService;
+	
+	@GetMapping("/index")
+	public String index()
+	{
+		return "Theatre Service index";
+	}
 	
 	
 	@PostMapping("/theatres")
@@ -99,11 +107,18 @@ public class TheatreController {
 	}
 	
 	
-	@GetMapping("{screenId}/showTimes")
+	@GetMapping("screens/{screenId}/showTimes")
 	public  ResponseEntity<List<ShowTime>> getShowTimesForScreen(@PathVariable("screenId") String screenId)
 	{
 		return new ResponseEntity<>(theatreService.getShowTimesForScreen(screenId), HttpStatus.OK);
 	}
+	
+	@GetMapping("{showTimeId}/showTimes")
+	public  ResponseEntity<ShowTime> getShowTime(@PathVariable("showTimeId") String showTimeId)
+	{
+		return new ResponseEntity<>(theatreService.getShowTime(showTimeId), HttpStatus.OK);
+	}
+	
 	
 	@PutMapping("/{showTimeId}/showTimes")
 	public ResponseEntity<ShowTime> updateShowTime(@PathVariable("showTimeId") String showTimeId, @RequestBody ShowTime updatedShowTime)
@@ -125,10 +140,10 @@ public class TheatreController {
 	}
 	
 	@GetMapping("{showTimeId}/seats")
-	public  ResponseEntity<List<Seat>> getSeatsForShowTime(@PathVariable("showTimeId") String showTimeId, @RequestParam Optional<String> action)
+	public  ResponseEntity<Seats> getSeatsForShowTime(@PathVariable("showTimeId") String showTimeId, @RequestParam Optional<String> action) throws Exception
 	{
 		if(!action.isPresent())
-			return new ResponseEntity<>(theatreService.getAvailableSeatsForShowTime(showTimeId), HttpStatus.OK);
+			return new ResponseEntity<>(new Seats(theatreService.getAvailableSeatsForShowTime(showTimeId)), HttpStatus.OK);
 		else if(action.get().equals("lock"))
 			theatreService.lockSeatsForShowTime(showTimeId);
 		
@@ -148,6 +163,36 @@ public class TheatreController {
 	{
 		return new ResponseEntity<>(theatreService.deleteSeat(seatId), HttpStatus.OK);
 	}
+	
+	@GetMapping("/release")
+	public ResponseEntity<String> releaseLockOnSeat(@RequestParam String showTimeId, @RequestParam String seatId)
+	{
+		theatreService.releaseLockOnSeatForShowTime(showTimeId, seatId);
+		return new ResponseEntity<>("Released Seat", HttpStatus.OK);
+	}
+	
+//	@GetMapping("/{showTimeId}/releaseAll")
+//	public ResponseEntity<String> releaseLockOnAllSeatsForShowTime(@PathVariable("showTimeId") String showTimeId)
+//	{
+//		theatreService.releaseAllSeatsForShowTime(showTimeId);
+//		return new ResponseEntity<>("Released All Seats", HttpStatus.OK);
+//	}
+//	
+	@GetMapping("/{bookingId}/releaseAll")
+	public ResponseEntity<String> releaseLockOnAllSeatsForBooking(@PathVariable("bookingId") String bookingId)
+	{
+		theatreService.releaseSeatsForBooking(bookingId);
+		return new ResponseEntity<>("Released All Seats For booking", HttpStatus.OK);
+	}
+	
+	@GetMapping("/{bookingId}/lock")
+	public ResponseEntity<String> lockSeatsForBooking(@PathVariable("bookingId") String bookingId) throws Exception
+	{	
+		theatreService.lockSeatsForBooking(bookingId);
+		return new ResponseEntity<>("Locked All Seats for booking", HttpStatus.OK);
+	}
+	
+	
 	
 	
 

@@ -1,4 +1,4 @@
-package com.cg.bms.bookingservice.model;
+package com.cg.bms.theatreservice.model;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +23,6 @@ import lombok.Setter;
 //Replace all @JsonIgnores with above
 
 
-@Document(value = "booking")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,7 +32,7 @@ import lombok.Setter;
 public class Booking {
 	
 	
-	@Id
+	
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String _id;
 	private String theatreId;

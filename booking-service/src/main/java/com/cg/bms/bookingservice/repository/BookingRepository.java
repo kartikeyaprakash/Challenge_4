@@ -13,7 +13,7 @@ import com.cg.bms.bookingservice.model.Booking;
 public interface BookingRepository extends MongoRepository<Booking, String> {
 	
 	public List<Booking> findByUserId(String userId); 
-	public List<Booking> findByUserIdAndBeforeBookingDate(String userId, Date bookingDate);
-	public List<Booking> findByUserIdAndAfterBookingDate(String userId, Date thresholdDate);
+	public List<Booking> findByUserIdAndBookingDateBefore(String userId, Date bookingDate);
+	public List<Booking> findByUserIdAndBookingDateAfter(String userId, Date thresholdDate);
 
 }
